@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 // for uchar4 struct
 #include <cuda_runtime.h>
 
@@ -15,6 +16,7 @@ void channelConvolution(const unsigned char* const channel,
   for (int r = 0; r < (int)numRows; ++r) {
     for (int c = 0; c < (int)numCols; ++c) {
       float result = 0.f;
+  float total = 0.f;
       //For every value in the filter around the pixel (c, r)
       for (int filter_r = -filterWidth/2; filter_r <= filterWidth/2; ++filter_r) {
         for (int filter_c = -filterWidth/2; filter_c <= filterWidth/2; ++filter_c) {
@@ -26,9 +28,11 @@ void channelConvolution(const unsigned char* const channel,
           float image_value = static_cast<float>(channel[image_r * numCols + image_c]);
           float filter_value = filter[(filter_r + filterWidth/2) * filterWidth + filter_c + filterWidth/2];
 
+		  total += filter_value;
           result += image_value * filter_value;
         }
       }
+//		  std::cout << "Total value " << total << std::endl;
 
       channelBlurred[r * numCols + c] = result;
     }

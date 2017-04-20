@@ -7,7 +7,7 @@
 //ignored in this homework.
 
 //Each channel Red, Blue, Green and Alpha is represented by one byte.
-//Since we are using one byte for each color there are 256 different
+//Since we are using one byte for each color there are 512 different
 //possible values for each color.  This means we use 4 bytes per pixel.
 
 //Greyscale images are represented by a single intensity value per pixel
@@ -50,6 +50,15 @@ void rgba_to_greyscale(const uchar4* const rgbaImage,
   //First create a mapping from the 2D block and grid locations
   //to an absolute 2D location in the image, then use that to
   //calculate a 1D offset
+
+	int dimx = numRows / 512 + 1;
+	int rowIdx = blockIdx.x * dimx + blockIdx.y;
+	//dimx = numCols / 512 + 1;
+	//int colIdx = threadIdx.x * dimx + threadIdx.y;
+	int colIdx = threadIdx.x;
+	int idx1d = rowIdx * numCols + colIdx;
+
+	greyImage[idx1d] = (0.299f * rgbaImage[idx1d].x + 0.587f * rgbaImage[idx1d].y + 0.114f * rgbaImage[idx1d].z);
 }
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_rgbaImage,
@@ -57,8 +66,11 @@ void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_r
 {
   //You must fill in the correct sizes for the blockSize and gridSize
   //currently only one block with one thread is being launched
-  const dim3 blockSize(1, 1, 1);  //TODO
-  const dim3 gridSize( 1, 1, 1);  //TODO
+  int dimx = numRows / 512 + 1;
+  const dim3 gridSize(512, dimx, 1);  //TODO
+  //dimx = numCols / 512 + 1;
+  //const dim3 blockSize(512, dimx, 1);  //TODO
+  const dim3 blockSize(numCols, 1, 1);
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
   
   cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
