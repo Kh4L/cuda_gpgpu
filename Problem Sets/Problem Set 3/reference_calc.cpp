@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 void referenceCalculation(const float* const h_logLuminance, unsigned int* const h_cdf,
                           const size_t numRows, const size_t numCols, const size_t numBins, 
@@ -18,6 +19,8 @@ void referenceCalculation(const float* const h_logLuminance, unsigned int* const
   //Step 2
   float logLumRange = logLumMax - logLumMin;
 
+
+  std::cout << "ref logLumRange " << logLumRange << std::endl;
   //Step 3
   //next we use the now known range to compute
   //a histogram of numBins bins

@@ -1,0 +1,2 @@
+cdf declared in main.c, initialized in HW3.c
+n bins 1024
